@@ -1,0 +1,17 @@
+.container {
+	margin-top: 40px;
+}
+
+.btn-secondary {
+	background-color: #fff;
+	border: 1px solid #999;
+	margin: 4px;
+}
+
+#search-input {
+	margin: 20px;
+	font-weight: bold;
+	margin-right: 150px;
+	max-width: 15%;
+	float: right;
+}

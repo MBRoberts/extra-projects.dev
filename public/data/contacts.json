@@ -1,0 +1,18 @@
+[
+	{
+		"name" : "Bob",
+		"email" : "bob@mail.com",
+		"phone" : "123-123-1234",
+		"actions" : "<button type='button' class='btn btn-secondary edit-btn' data-toggle='modal' data-target='#myModal'>Edit</button><button class='btn btn-danger'>Remove</button>"
+	}, {
+		"name" : "Sarah",
+		"email" : "sarah@mail.com",
+		"phone" : "123-123-1234",
+		"actions" : "<button type='button' class='btn btn-secondary edit-btn' data-toggle='modal' data-target='#myModal'>Edit</button><button class='btn btn-danger'>Remove</button>"
+	}, {
+		"name" : "Ben",
+		"email" : "ben@mail.com",
+		"phone" : "987-987-9876",
+		"actions" : "<button type='button' class='btn btn-secondary edit-btn' data-toggle='modal' data-target='#myModal'>Edit</button><button class='btn btn-danger'>Remove</button>"
+	}
+]
