@@ -1,122 +1,204 @@
-"use strict";
+// see:
+// http://ejohn.org/blog/javascript-micro-templating/
 
-$(document).ready(function(){
+// Simple JavaScript Templating
+// John Resig - http://ejohn.org/ - MIT Licensed
+(function(){
+	var cache = {};
 
-	getInfo();  //  Calls first function
+	this.tmpl = function tmpl(str, data){
+		// Figure out if we're getting a template, or if we need to
+		// load the template - and be sure to cache the result.
+		var fn = !/\W/.test(str) ?
+			cache[str] = cache[str] ||
+			tmpl(document.getElementById(str).innerHTML) :
 
-	// Makes ajax request and populates table with JSON info
-	function getInfo() {
+		// Generate a reusable function that will serve as a template
+		// generator (and which will be cached).
+		new Function("obj",
+			"var p=[],print=function(){p.push.apply(p,arguments);};" +
 
-		var contents = "<tr><th>Name</th><th>Email</th><th>Phone #</th><th>Actions</th></tr>";
+			// Introduce the data as local variables using with(){}
+			"with(obj){p.push('" +
 
-		$.get("data/contacts.json").done(function(data) {
+			// Convert the template into pure JavaScript
+			str
+				.replace(/[\r\t\n]/g, " ")
+				.split("<%")
+				.join("\t")
+				.replace(/((^|%>)[^\t]*)'/g, "$1\r")
+				.replace(/\t=(.*?)%>/g, "',$1,'")
+				.split("\t")
+				.join("');")
+				.split("%>")
+				.join("p.push('")
+				.split("\r")
+				.join("\\'")
 
-			data.forEach(function(element){  //  Concatenates JSON data into a html string
-				contents += "<tr class='table-info'><td>" + element.name + "</td>";
-				contents += "<td>" + element.email + "</td>";
-				contents += "<td>" + element.phone + "</td>";
-				contents += "<td>" + element.actions + "</td></tr>";
-			});
-			
-			$("table").append(contents);  //  Attaches html string to table
+			+ "');}return p.join('');");
 
-			editBtn();  //  Adds event listener to the edit button
-			removeBtn();  //  Adds event listener to the remove button
+		// Provide some basic currying to the user
+		return data ? fn( data ) : fn;
+	};
+})();
 
+// search engine
+$('#input-search').keyup(function(e) {
+
+	// checks each table row for the inputted string. Hide's the row if string is not present
+	$.each($("tbody").find("tr"), function() {
+        if ($(this).text().toLowerCase().indexOf($('#input-search').val().toLowerCase()) === -1) {
+			$(this).hide();
+		} else if ($('#input-search').val() === '') {
+			insertTable();
+		} else {
+            $(this).show();
+        }
+    });
+});
+
+
+// when 'add contact' button is clicked, the new info is saved into an object and pushed on to the dataObject and saved back into localStorage
+$('#btn-new').click(function(e) {
+
+	e.preventDefault();
+
+	var dataObject = $.localStorage.get("dataObject");
+	var newContact = {
 		
-		}).fail(function() {
+		name : $('#input-new-name').val(),
+		email : $('#input-new-email').val(),
+		phone : $('#input-new-phone').val(),
+		id : (dataObject.contacts.length + 1)
 
-			alert("There's an error with your AJAX request");
-
-		});
-	}
-
-	//  Adds event listener to both the edit buttons and save changes button. Also replaces info in the table with editted info.
-	function editBtn() {
-		$('.edit-btn').click(function(e) {
-			$('#edit-name').val($(this).parent().parent().children()[0].innerText);
-			$('#edit-email').val($(this).parent().parent().children()[1].innerText);
-			$('#edit-phone').val($(this).parent().parent().children()[2].innerText);
-			
-			$("#edit-save").click(function() {
-				e.currentTarget.parentElement.parentElement.children[0].innerText = $('#edit-name').val();
-				e.currentTarget.parentElement.parentElement.children[1].innerText = $('#edit-email').val();
-				e.currentTarget.parentElement.parentElement.children[2].innerText = $('#edit-phone').val();
-			});
-		});
-	}
-
-	//  Adds listener to remove buttons and removes the table row
-	function removeBtn() {
-		$(".btn-danger").click(function(e) {
-			var confirmBtn = confirm("Are you sure you want to delete this");
-			console.log(confirmBtn);
-			if (confirmBtn) {
-				$(this).parent().parent().remove();
-			}
-		});
-	}
-
-	//  Search engine 
-	function search() {
-
-		$('#search-input').keyup(function(e) {
-			
-			var $tableRows = $(".table tbody").children("tr.table-info");  //  Pulls table rows
-			
-			$.each($tableRows, function() {
-				
-				var stringCheck = $(this).text().toLowerCase().indexOf($('#search-input').val().toLowerCase());  //  If the typed string is not present within the table's information, it will return a -1
-
-				if(stringCheck === -1) {
-					$(this).hide();  //  Hides each row that doesn't contain the string
-				} else {
-					$(this).show();
-				}
-			});
-			if ($('#search-input').val() === '') {  //  If the search characters are deleted 
-				$('table').text('');                //  the table is cleared so that info isn't duplicated when appended
-				getInfo();							//  Repopulates the table
-			}
-		});
 	};
 
-	$('#search-input').click(function(){
-		search();
-	});
+	dataObject.contacts.push(newContact);
+	$.localStorage.set("dataObject", dataObject);
+	$(".form-control").val("");
+	insertTable();
 
-	//  Adds listener to the add button and adds the info to the table
-	$("#add-btn").click(function(e) {
-
-		e.preventDefault();
-		
-		var nameValid = e.currentTarget.form[0].validity.valid;  
-		var emailValid = e.currentTarget.form[1].validity.valid;  //  Stores booleans of wether or not the fields are valid
-		var phoneValid = e.currentTarget.form[2].validity.valid;  
-
-		if (nameValid && emailValid && phoneValid) {  //  If all fields are valid the info is added to the table
-
-			var $name = $("#name-input").val();
-			var $email = $("#email-input").val();
-			var $phone = $("#phone-input").val();
-			var actions = "<button type='button' class='btn btn-secondary edit-btn' data-toggle='modal' data-target='#myModal'>Edit</button><button class='btn btn-danger'>Remove</button>";
-
-			var tableContent = "<tr><td>" + $name + "</td>";
-			tableContent += "<td>" + $email + "</td>";
-			tableContent += "<td>" + $phone + "</td>";
-			tableContent += "<td>" + actions + "</td></tr>";
-
-			$('.table').append(tableContent);
-
-			editBtn();  //  adds listener to edit buttons
-			removeBtn();  //  adds listener to remove buttons
-		}
-	});
-
-	//  Clears input values
-	$("#clear-btn").click(function(e) {
-		$("#name-input").val('');
-		$("#email-input").val('');
-		$("#phone-input").val('');
-	});
 });
+
+
+$('#btn-clear').click(function(e) {
+	$(".form-control").val("");
+});
+
+
+$(function() {
+
+	if ($.localStorage.isSet('dataObject')) {
+		insertTable();
+	} else {
+
+		var dataObject = {
+			contacts:[]
+		};
+		
+		$.localStorage.set("dataObject", dataObject);
+		insertTable();
+	}
+
+});
+
+
+function insertTable() {
+
+	var dataObject = $.localStorage.get("dataObject");
+	var results = document.getElementById("results");
+
+	results.innerHTML = tmpl("item_tmpl", dataObject);
+	editBtnListeners();
+	deleteBtn();
+
+}
+
+
+function editBtnListeners() {
+
+	$('.btn-edit').click(function(e) {
+
+		var btnData = $(this).data('tablerow');
+		var tableRow = $('#' + btnData);
+		var tableDataName = $(tableRow).children()[0];
+		var tableDataEmail = $(tableRow).children()[1];
+		var tableDataPhone = $(tableRow).children()[2];
+
+		$('#input-edit-name').val(tableDataName.innerText);
+		$('#input-edit-email').val(tableDataEmail.innerText);
+		$('#input-edit-phone').val(tableDataPhone.innerText);
+		
+		$('#btn-save').on('click', function(e) {
+
+			var dataObject = $.localStorage.get("dataObject");
+
+			dataObject.contacts[(btnData)].name = $('#input-edit-name').val();
+			dataObject.contacts[(btnData)].email = $('#input-edit-email').val();
+			dataObject.contacts[(btnData)].phone = $('#input-edit-phone').val();
+
+			$.localStorage.set("dataObject", dataObject);
+
+			$('#btn-save').off('click');
+
+			insertTable();
+
+		});
+	});
+};
+
+
+function deleteBtn() {
+	$(".btn-delete").click(function(e) {
+
+		var dataObject = $.localStorage.get('dataObject');
+
+		if (confirm('Are you sure you want to delete this?')) {
+			console.log($(this).data('tableRow'));
+			dataObject.contacts.splice(dataObject.contacts.indexOf($(this).data('tableRow')), 1);
+
+			$.localStorage.set("dataObject", dataObject);
+			insertTable();
+
+		};
+	});
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
