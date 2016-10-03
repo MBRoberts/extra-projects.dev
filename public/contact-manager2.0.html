@@ -1,6 +1,9 @@
+
+
 <!DOCTYPE html>
 
 <html lang="en" ng-app="contactsModule">
+
 	<head>
 
 		<meta charset="utf-8">
@@ -11,15 +14,15 @@
 		<title>Contacts Manager</title>
 
 		<!-- Facebook and Twitter integration -->
-		<meta property="og:title" content="" />
-		<meta property="og:image" content="" />
-		<meta property="og:url" content="" />
-		<meta property="og:type" content="" />
-		<meta property="og:description" content=""/>
-		<meta name="twitter:title" content="" />
-		<meta name="twitter:image" content="" />
-		<meta name="twitter:url" content="" />
-		<meta name="twitter:card" content="summary" />
+		<meta property="og:title" content="">
+		<meta property="og:image" content="">
+		<meta property="og:url" content="">
+		<meta property="og:type" content="">
+		<meta property="og:description" content="">
+		<meta name="twitter:title" content="">
+		<meta name="twitter:image" content="">
+		<meta name="twitter:url" content="">
+		<meta name="twitter:card" content="summary">
 
 		<!-- Bootstrap Core CSS CDN-->
 		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -50,10 +53,10 @@
 				</tbody>
 			</table>
 
+			<!-- John Resig's JS Templating -->
 			<script type="text/html" id="item_tmpl">
-
 				<% for (var i = 0 ; i < contacts.length ; i++) { %>
-					<tr id="<%=contacts[i].id%>">
+					<tr id="<%=contacts[i].name%>" class="tr">
 						<td><%=contacts[i].name%></td>
 						<td><%=contacts[i].email%></td>
 						<td><%=contacts[i].phone%></td>
@@ -67,9 +70,7 @@
 			<!-- Modal -->
 			<div id="myModal" class="modal fade" role="dialog">
 				<div class="modal-dialog">
-					<!-- Modal content-->
 					<div class="modal-content">
-
 						<div class="modal-header">
 							<button type="button" class="close" data-dismiss="modal">&times;</button>
 							<h4 class="modal-title">Edit Contact</h4>
@@ -87,7 +88,6 @@
 								<div class="form-group">
 									<label for="input-edit-email" class="control-label">Email Address</label>
 									<input pattern="^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$" class="form-control" id="input-edit-email" placeholder="Email" data-error="Must be a valid Email" required>
-									<div class="help-block with-errors"></div>
 								</div>
 
 								<br>
@@ -95,7 +95,6 @@
 								<div class="form-group">
 									<label for="input-edit-phone" class="control-label">Phone Number</label>
 									<input type="tel" name="usrtel" pattern='\d{3}[\-]\d{3}[\-]\d{4}' class="form-control" id="input-edit-phone" placeholder="Phone Number" required>
-									<div class="help-block with-errors"></div>
 								</div>
 							</div><!-- /.modal-body -->
 
@@ -114,7 +113,6 @@
 			<h2>Add Contact</h2>
 
 			<form data-toggle="validator" role="form">
-
 				<div class="form-group">
     				<label for="input-new-name" class="control-label">Name</label>
     				<input type="text" class="form-control" id="input-new-name" placeholder="Enter Name" required='true'>
@@ -125,7 +123,6 @@
 				<div class="form-group">
     				<label for="input-new-email" class="control-label">Email</label>
     				<input type="email" pattern="^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$" class="form-control" id="input-new-email" placeholder="Email" data-error="Must be a valid Email" required>
-    				<div class="help-block with-errors"></div>
  				</div>
 
  				<br>
@@ -133,28 +130,27 @@
 				<div class="form-group">
     				<label for="input-new-phone" class="control-label">Phone Number</label>
     				<input type="tel" name="usrtel" pattern='\d{3}[\-]\d{3}[\-]\d{4}' class="form-control" id="input-new-phone" placeholder="Phone Number" required>
-    				<div class="help-block with-errors"></div>
  				</div>
 
 				<br>
 
 				<div class="form-group">
 					<button id='btn-clear' type='button' class='btn btn-secondary'>Clear</button>
-					<button id="btn-new" type='submit' class='btn btn-success'>Add Contact</button>
+					<button id="btn-new" class='btn btn-success'>Add Contact</button>
 				</div>
-
 			</form>
-
 		</div><!-- /.container -->
 
 		<!-- Jquery.js CDN -->
-		<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
-		<!-- Angular.js CDN -->
-		<script type="text/javascript" src="https://opensource.keycdn.com/angularjs/1.5.8/angular.min.js "></script>
+		<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 		<!-- Bootstrap.js CDN -->
 		<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-		<!-- Module -->
+		<!-- Angular.js CDN -->
+		<script type="text/javascript" src="https://opensource.keycdn.com/angularjs/1.5.8/angular.min.js "></script>
+		<!-- Angular Module -->
 		<script type="text/javascript" src="js/contactsModule.js"></script>
+		<!-- Custom Jquery -->
+		<script type="text/javascript" src="js/contact-manager2.0.js"></script>
 
 	</body>
 </html>
