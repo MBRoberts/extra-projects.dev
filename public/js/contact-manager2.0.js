@@ -79,16 +79,17 @@ $('#btn-new').click(function(e) {
 	// Checks validity, pushes new contact onto contacts and resets table
 	if (nameValidity && emailValidity && phoneValidity) {
 		contacts.push(newContact);
+		contacts.sort(sortByName);
 		results.innerHTML = tmpl("item_tmpl", contacts);
 		btnListeners();
-		$(".form-control").val("");
 	}
+	$(".form-control").val("");
 });
 
 
 function btnListeners() {
 
-	$('.btn-edit').click(function(e) {
+	$('.btn-edit').on('click', function(e) {
 
 		var rowNum = $(this).closest('tr').index(); // gets the index of the table row
 		var name = contacts[rowNum].name;
@@ -101,24 +102,32 @@ function btnListeners() {
 		$('#input-edit-phone').val(phone);
 
 		// resets the contacts properties to the edit inputs
-		$('#btn-save').click(function(e) {
+		$('#btn-save').on("click", function(e) {
 			contacts[rowNum].name = $('#input-edit-name').val();
 			contacts[rowNum].email = $('#input-edit-email').val();
 			contacts[rowNum].phone = $('#input-edit-phone').val();
+
+			contacts.sort(sortByName);
 			results.innerHTML = tmpl("item_tmpl", contacts);
 			btnListeners();
+			$('.btn-edit').off('click');
+			$('#btn-save').off('click');
 		});
 	});
 
 	// confirms contact delete and splices contact out
-	$('.btn-delete').click(function(e) {
+	$('.btn-delete').mousedown(function(e) {
 		var rowNum = $(this).closest('tr').index();
-		
-		if(confirm("Are you sure you want to delete this?")) {
-			contacts.splice(rowNum, 1);
-			results.innerHTML = tmpl("item_tmpl", contacts);
-			btnListeners();
-		}
+		$(this).closest('tr').addClass('danger');
+
+		$('.btn-delete').mouseup(function(e) {
+			if(confirm("Are you sure you want to delete " + $(this).closest('tr').attr('id') + "?")) {
+				contacts.splice(rowNum, 1);
+				contacts.sort(sortByName);
+				results.innerHTML = tmpl("item_tmpl", contacts);
+				btnListeners();
+			}
+		});
 	});
 };
 
@@ -131,6 +140,7 @@ $('#input-search').keyup(function(e) {
         if ($(this).text().toLowerCase().indexOf($('#input-search').val().toLowerCase()) === -1) {
 			$(this).hide();
 		} else if ($('#input-search').val() === '') {
+			contacts.sort(sortByName);
 			results.innerHTML = tmpl("item_tmpl", contacts);
 			btnListeners();
 		} else {
@@ -139,7 +149,23 @@ $('#input-search').keyup(function(e) {
     });
 });
 
+
+// Clear Button
+$('#btn-clear').click(function(e) {
+	$(".form-control").val("");
+});
+
+
+// Sorts contacts by name
+function sortByName(a, b){
+  var aName = a.name.toLowerCase();
+  var bName = b.name.toLowerCase(); 
+  return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
+}
+
+
 // calls table template
+contacts.sort(sortByName);
 results.innerHTML = tmpl("item_tmpl", contacts);
 btnListeners();
 
