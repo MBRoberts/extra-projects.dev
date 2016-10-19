@@ -63,7 +63,7 @@ this.tmpl = function tmpl(str, data){
 
 
 $('#btn-new').click(function(e) {
-
+	
 	// creates new contact
 	var newContact = {
 		name : $('#input-new-name').val(),
@@ -81,55 +81,44 @@ $('#btn-new').click(function(e) {
 		contacts.push(newContact);
 		contacts.sort(sortByName);
 		results.innerHTML = tmpl("item_tmpl", contacts);
-		btnListeners();
 	}
+
 	$(".form-control").val("");
 });
 
 
-function btnListeners() {
+$('#results').on('click', '.btn-edit', function(e) {
 
-	$('.btn-edit').on('click', function(e) {
+	var rowNum = $(this).closest('tr').index(); // gets the index of the table row
+	var name = contacts[rowNum].name;
+	var email = contacts[rowNum].email;
+	var phone = contacts[rowNum].phone;
 
-		var rowNum = $(this).closest('tr').index(); // gets the index of the table row
-		var name = contacts[rowNum].name;
-		var email = contacts[rowNum].email;
-		var phone = contacts[rowNum].phone;
+	// adds table data to edit form
+	$('#input-edit-name').val(name);
+	$('#input-edit-email').val(email);
+	$('#input-edit-phone').val(phone);
+	$('.modal-footer').on("click", "#btn-save", function(e) {
+		contacts[rowNum].name = $('#input-edit-name').val();
+		contacts[rowNum].email = $('#input-edit-email').val();
+		contacts[rowNum].phone = $('#input-edit-phone').val();
 
-		// adds table data to edit form
-		$('#input-edit-name').val(name);
-		$('#input-edit-email').val(email);
-		$('#input-edit-phone').val(phone);
-
-		// resets the contacts properties to the edit inputs
-		$('#btn-save').on("click", function(e) {
-			contacts[rowNum].name = $('#input-edit-name').val();
-			contacts[rowNum].email = $('#input-edit-email').val();
-			contacts[rowNum].phone = $('#input-edit-phone').val();
-
-			contacts.sort(sortByName);
-			results.innerHTML = tmpl("item_tmpl", contacts);
-			btnListeners();
-			$('.btn-edit').off('click');
-			$('#btn-save').off('click');
-		});
+		contacts.sort(sortByName);
+		results.innerHTML = tmpl("item_tmpl", contacts);
 	});
+});
 
-	// confirms contact delete and splices contact out
-	$('.btn-delete').mousedown(function(e) {
+
+// confirms contact delete and splices contact out
+$('#results').on('click', '.btn-delete', function(e) {	
+	if(confirm("Are you sure you want to delete " + $(this).closest('tr').attr('id') + "?")) {
 		var rowNum = $(this).closest('tr').index();
 		$(this).closest('tr').addClass('danger');
-
-		$('.btn-delete').mouseup(function(e) {
-			if(confirm("Are you sure you want to delete " + $(this).closest('tr').attr('id') + "?")) {
-				contacts.splice(rowNum, 1);
-				contacts.sort(sortByName);
-				results.innerHTML = tmpl("item_tmpl", contacts);
-				btnListeners();
-			}
-		});
-	});
-};
+		contacts.splice(rowNum, 1);
+		contacts.sort(sortByName);
+		results.innerHTML = tmpl("item_tmpl", contacts);
+	};
+});
 
 
 // search engine
@@ -142,7 +131,6 @@ $('#input-search').keyup(function(e) {
 		} else if ($('#input-search').val() === '') {
 			contacts.sort(sortByName);
 			results.innerHTML = tmpl("item_tmpl", contacts);
-			btnListeners();
 		} else {
             $(this).show();
         }
@@ -158,21 +146,30 @@ $('#btn-clear').click(function(e) {
 
 // Sorts contacts by name
 function sortByName(a, b){
-  var aName = a.name.toLowerCase();
-  var bName = b.name.toLowerCase(); 
-  return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
+	var aName = a.name.toLowerCase();
+	var bName = b.name.toLowerCase(); 
+	return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
 }
 
 
 // calls table template
 contacts.sort(sortByName);
 results.innerHTML = tmpl("item_tmpl", contacts);
-btnListeners();
 
-
-
-
-
-
-
+$(".forms").validate({
+	rules: {
+		name: "required",
+		email: {
+			required: true,
+			email: true
+		},
+		phone: {
+			required: true,
+			number: true
+		}
+	},
+	messages: {
+		name: "Please enter your name"
+	}
+})
 
