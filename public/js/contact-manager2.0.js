@@ -54,8 +54,6 @@ this.tmpl = function tmpl(str, data){
 			.join("\\'")
 
 		+ "');}return p.join('');");
-
-	
 	
 	// Provide some basic currying to the user
 	return data ? fn( data ) : fn;

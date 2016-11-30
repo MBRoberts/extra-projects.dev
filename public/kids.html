@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+
+		<meta charset="utf-8">
+		<meta name="description" content="">
+		<meta name="author" content="Ben Roberts">
+
+		<title>Random Kid Selector</title>
+
+		<!-- Bootstrap Core CSS CDN-->
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+		<link rel="stylesheet" type="text/css" href="/css/animate.css">
+
+		<style type="text/css">
+
+			.jumbotron {
+				margin-top: 20%;
+				border: 4px solid black;
+				border-radius: 15px !important;
+				width: 1150px;
+				height: 200px;
+			}
+
+			body {
+				background-color: lightgrey;
+				font-family: 'Chalkboard SE';
+			}
+
+		</style>
+
+	</head>
+	<body>
+
+		<div class="container text-center">
+			<div class="jumbotron animated flipInX"><h1 id="name">Say 'Random' when ready...</h1></div>
+		</div>
+
+		<!-- Jquery.js CDN -->
+		<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+		
+		<!--Annyang Speech Recognition-->
+		<script src="/js/annyang.min.js"></script>
+		
+		<script type="text/javascript">
+
+			var kidsArray = [];
+
+			if (annyang) {
+
+			  	// Let's define our first command. First the text we expect, and then the function it should call
+			    
+				var commands = {
+				    'five seven': function() {
+
+					    if (kidsArray.length == 0) {
+						    kidsArray = ['Mia', 'Taylor', 'Josh', 'Aaron', 'James', 'Nathan', 'Emma'];
+						}
+
+						randomPick = kidsArray[Math.floor(Math.random() * kidsArray.length)];
+
+						$('.jumbotron').removeClass('flipInX');
+						$('.jumbotron').addClass('flip');
+						$('#name').html('');
+
+						setTimeout(function(){
+							voice = new SpeechSynthesisUtterance("five times seven is thirtyfive");
+							$('#name').html(randomPick);
+
+							window.speechSynthesis.speak(voice);
+
+							kidsArray.splice(kidsArray.indexOf(randomPick), 1);
+
+							if (kidsArray.length == 0) {
+								setTimeout(function(){
+									$('#name').html('Resetting Names');
+								}, 2000);
+								setTimeout(function(){
+									$("#name").html("Names are set, Say 'Random' when ready...");
+								}, 3000);
+							}
+
+							$('.jumbotron').removeClass('flip');
+
+						}, 500);
+				    },
+
+
+				    'hello': function() {
+
+				    	voice = new SpeechSynthesisUtterance("Hello, " + $('#name').text() + ". How are you?");
+				    	window.speechSynthesis.speak(voice);
+				    }
+				};
+
+				// Add our commands to annyang
+				annyang.addCommands(commands);
+
+				// Start listening. You can call this here, or attach this call to an event, button, etc.
+				annyang.start();
+			}
+
+		</script>
+
+		<!-- Bootstrap.js CDN -->
+		<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+	</body>
+</html>
